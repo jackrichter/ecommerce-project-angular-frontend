@@ -12,6 +12,7 @@ export class ProductListComponent implements OnInit {
 
   products: Product[] = [];
   currentCategoryId: number = 1;
+  currentCategoryName = "";
 
   constructor(private productService: ProductService, private route: ActivatedRoute) { }
 
@@ -32,10 +33,14 @@ export class ProductListComponent implements OnInit {
     // Make use of the NON-NULL Assertion Operator "!"
     if (hasCategoryId) {
       this.currentCategoryId = +this.route.snapshot.paramMap.get('id')!;
+
+      // Get the "name" param string
+      this.currentCategoryName = this.route.snapshot.paramMap.get('name')!;
     }
     else {
-      // default to category id 1
+      // default to category id 1 and category name to 'Books'
       this.currentCategoryId = 1;
+      this.currentCategoryName = "Books";
     }
 
     // Get the products for the given category id

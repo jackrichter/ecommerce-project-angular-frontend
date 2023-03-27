@@ -13,18 +13,43 @@ export class ProductListComponent implements OnInit {
   products: Product[] = [];
   currentCategoryId: number = 1;
   currentCategoryName = "";
+  serachMode: boolean = false;
 
   constructor(private productService: ProductService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
 
-    this.route.paramMap.subscribe(() => {
-      this.getListProducts();
-    });
+    this.route.paramMap.subscribe(() => this.getListProducts());
 
   }
 
   getListProducts() {
+
+    this.serachMode = this.route.snapshot.paramMap.has('keyword');
+    // console.log(`searchMode=${this.serachMode}`);
+
+    if (this.serachMode) {
+      this.handleSearchProducts();
+    }
+    else {
+      this.handleListProducts();
+    }
+  }
+
+  private handleSearchProducts() {
+
+    const theKeyWord: string = this.route.snapshot.paramMap.get('keyword')!;
+    // console.log(`theKeyword=${theKeyWord}`);
+
+    // Search for products using the keyword
+    this.productService.SearchProducts(theKeyWord).subscribe(
+      (data: Product[]) => {
+        this.products = data;
+      }
+    );
+  }
+
+  private handleListProducts() {
 
     // Check if parameter 'id' is available
     const hasCategoryId: boolean = this.route.snapshot.paramMap.has('id');

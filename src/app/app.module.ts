@@ -10,7 +10,7 @@ import { ProductCategoryMenuComponent } from './componets/product-category-menu/
 import { SearchComponent } from './componets/search/search.component';
 
 const routes: Routes = [
-  {path: 'search/keyword', component: ProductListComponent},
+  {path: 'search/:keyword', component: ProductListComponent},
   {path: 'category/:id/:name', component: ProductListComponent},
   {path: 'category', component: ProductListComponent},
   {path: 'products', component: ProductListComponent},

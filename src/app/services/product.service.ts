@@ -14,6 +14,18 @@ export class ProductService {
   private categoryUrl = 'http://localhost:8080/api/product-category';
 
   constructor(private httpClient: HttpClient) { }
+
+  getProductListPaginate(thePage: number,
+                         thePageSize: number, 
+                        theCategoryId: number): Observable<GetResponseProducts> {
+
+    // Build url based on category id, page and size
+    const searchUrl = `${this.baseUrl}/search/findByCategoryId?id=${theCategoryId}`
+                      + `&page=${thePage}&size=${thePageSize}`;
+
+    // Call Backend REST API with Pagination
+    return this.httpClient.get<GetResponseProducts>(searchUrl);
+  }
   
   getTheProduct(theProductId: number): Observable<Product> {
     
@@ -61,6 +73,12 @@ export class ProductService {
 interface GetResponseProducts {
   _embedded: {
     products: Product[];
+  }
+  "page": {
+    "size": number,
+    "totalElements": number,
+    "totalPages": number,
+    "number": number
   }
 }
 

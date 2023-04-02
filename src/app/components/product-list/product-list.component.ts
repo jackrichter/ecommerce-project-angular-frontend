@@ -21,18 +21,21 @@ export class ProductListComponent implements OnInit {
   thePageSize: number = 5;
   theTotalElements: number = 0;
 
-  constructor(private productService: ProductService, private route: ActivatedRoute) { }
+  previousKeyWord: string = "";
+
+  constructor(private productService: ProductService, 
+              private route: ActivatedRoute) { }
 
   ngOnInit(): void {
 
-    this.route.paramMap.subscribe(() => this.getListProducts());
+    this.route.paramMap.subscribe(() => this.listProducts());
 
   }
 
-  getListProducts() {
+  listProducts() {
 
     this.serachMode = this.route.snapshot.paramMap.has('keyword');
-    // console.log(`searchMode=${this.serachMode}`);
+    //console.log(`searchMode=${this.serachMode}`);
 
     if (this.serachMode) {
       this.handleSearchProducts();
@@ -42,20 +45,29 @@ export class ProductListComponent implements OnInit {
     }
   }
 
-  private handleSearchProducts() {
+  handleSearchProducts() {
 
     const theKeyWord: string = this.route.snapshot.paramMap.get('keyword')!;
-    // console.log(`theKeyword=${theKeyWord}`);
 
-    // Search for products using the keyword
-    this.productService.SearchProducts(theKeyWord).subscribe(
-      (data: Product[]) => {
-        this.products = data;
-      }
-    );
+    /**
+     * If we have a different keyword than previous
+     * then set thePageNumber to 1.
+     */
+    if (this.previousKeyWord != theKeyWord) {
+      this.thePageNumber = 1;
+    }
+
+    this.previousKeyWord = theKeyWord;
+
+    console.log(`keyword=${theKeyWord}, thePageNumber=${this.thePageNumber}`);
+
+    // Search for products using the keyword with pagination
+    this.productService.searchProducPaginate(this.thePageNumber - 1,
+                                             this.thePageSize,
+                                             theKeyWord).subscribe(this.processResult());
   }
 
-  private handleListProducts() {
+  handleListProducts() {
 
     // Check if parameter 'id' is available
     const hasCategoryId: boolean = this.route.snapshot.paramMap.has('id');
@@ -93,17 +105,23 @@ export class ProductListComponent implements OnInit {
     this.productService.getProductListPaginate(this.thePageNumber - 1,
                                                 this.thePageSize,
                                                 this.currentCategoryId)
-                                                .subscribe(data => {
-                                                  this.products = data._embedded.products;
-                                                  this.thePageNumber = data.page.number + 1;
-                                                  this.thePageSize = data.page.size;
-                                                  this.theTotalElements = data.page.totalElements;
-                                                });
+                                                .subscribe(this.processResult());
   }
   
   updatePageSize(pageSize: string) {
     this.thePageSize = +pageSize;
     this.thePageNumber = 1;
-    this.getListProducts();
+    this.listProducts();
   }
+
+  processResult() {
+
+    return (data: any) => {
+      this.products = data._embedded.products;
+      this.thePageNumber = data.page.number + 1;
+      this.thePageSize = data.page.size;
+      this.theTotalElements = data.page.totalElements;
+    };
+  }
+
 }

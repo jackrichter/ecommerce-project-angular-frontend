@@ -17,11 +17,11 @@ export class ProductService {
 
   getProductListPaginate(thePage: number,
                          thePageSize: number, 
-                        theCategoryId: number): Observable<GetResponseProducts> {
+                         theCategoryId: number): Observable<GetResponseProducts> {
 
     // Build url based on category id, page and size
     const searchUrl = `${this.baseUrl}/search/findByCategoryId?id=${theCategoryId}`
-                      + `&page=${thePage}&size=${thePageSize}`;
+                    + `&page=${thePage}&size=${thePageSize}`;
 
     // Call Backend REST API with Pagination
     return this.httpClient.get<GetResponseProducts>(searchUrl);
@@ -47,13 +47,25 @@ export class ProductService {
   SearchProducts(theKeyWord: string): Observable<Product[]> {
 
     // Build URL baed on the keyword
-    const searchUrlByKeyword = `${this.baseUrl}/search/findByNameContaining?name=${theKeyWord}`;
+    const searchUrlByKeyword = `${this.baseUrl}/search/`;
 
     // Call Backend REST API
     return this.getProducts(searchUrlByKeyword);
   }
+
+  searchProducPaginate(thePage: number,
+                       thePageSize: number, 
+                       theKeyWord: string): Observable<GetResponseProducts> {
+
+    // Build url based on search term (theKeyWord), page number and size
+    const searchUrl = `${this.baseUrl}/search/findByNameContaining?name=${theKeyWord}`
+                    + `&page=${thePage}&size=${thePageSize}`;
+
+    // Call Backend REST API with Pagination
+    return this.httpClient.get<GetResponseProducts>(searchUrl);
+  }
   
-  private getProducts(searchUrl: string): Observable<Product[]> {
+  getProducts(searchUrl: string): Observable<Product[]> {
 
     return this.httpClient.get<GetResponseProducts>(searchUrl).pipe(
       map(response => response._embedded.products)
@@ -73,7 +85,7 @@ export class ProductService {
 interface GetResponseProducts {
   _embedded: {
     products: Product[];
-  }
+  },
   "page": {
     "size": number,
     "totalElements": number,

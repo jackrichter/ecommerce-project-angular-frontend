@@ -23,8 +23,8 @@ export class ProductListComponent implements OnInit {
 
   previousKeyWord: string = "";
 
-  constructor(private productService: ProductService, 
-              private route: ActivatedRoute) { }
+  constructor(private productService: ProductService,
+    private route: ActivatedRoute) { }
 
   ngOnInit(): void {
 
@@ -63,8 +63,8 @@ export class ProductListComponent implements OnInit {
 
     // Search for products using the keyword with pagination
     this.productService.searchProducPaginate(this.thePageNumber - 1,
-                                             this.thePageSize,
-                                             theKeyWord).subscribe(this.processResult());
+      this.thePageSize,
+      theKeyWord).subscribe(this.processResult());
   }
 
   handleListProducts() {
@@ -103,11 +103,11 @@ export class ProductListComponent implements OnInit {
     // Get the products for the given category id
     //this.productService.getProductList(this.currentCategoryId).subscribe(data => this.products = data);
     this.productService.getProductListPaginate(this.thePageNumber - 1,
-                                                this.thePageSize,
-                                                this.currentCategoryId)
-                                                .subscribe(this.processResult());
+      this.thePageSize,
+      this.currentCategoryId)
+      .subscribe(this.processResult());
   }
-  
+
   updatePageSize(pageSize: string) {
     this.thePageSize = +pageSize;
     this.thePageNumber = 1;
@@ -115,13 +115,19 @@ export class ProductListComponent implements OnInit {
   }
 
   processResult() {
-
     return (data: any) => {
       this.products = data._embedded.products;
       this.thePageNumber = data.page.number + 1;
       this.thePageSize = data.page.size;
       this.theTotalElements = data.page.totalElements;
     };
+  }
+
+  addToCart(theProduct: Product) {
+
+    console.log(`Adding to cart: ${theProduct.name}, ${theProduct.unitPrice}`);
+
+    //TODO
   }
 
 }

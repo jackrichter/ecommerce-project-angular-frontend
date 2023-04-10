@@ -49,7 +49,7 @@ export class CartService {
       totalQuantityValue += currentCartItem.quantity;
     }
 
-    // Publish the new values... all subscribers will receive thr new data
+    // Publish the new values... all subscribers will receive the new data
     this.totalPrice.next(totalPriceValue);      // The next() method do the actual publishing
     this.totalQuantity.next(totalQuantityValue);
 
@@ -70,5 +70,30 @@ export class CartService {
 
     console.log(`totalPrice: ${totalPriceValue.toFixed(2)}, totalQuantity: ${totalQuantityValue}`);
     console.log('-------------------------------------------');
+  }
+  
+  decrementQuantity(theCartItem: CartItem) {
+    
+    theCartItem.quantity--;
+
+    if (theCartItem.quantity === 0) {
+      this.remove(theCartItem);
+    }
+    else {
+      this.computeCartTotals();
+    }
+  }
+
+  remove(theCartItem: CartItem) {
+
+    // get index of item in the array
+    const itemIndex = this.cartItems.findIndex(tmpCartItem => tmpCartItem.id === theCartItem.id);
+
+    // if found, remove the item from the array at the given index
+    if (itemIndex > -1) {
+      this.cartItems.splice(itemIndex, 1);
+      this.computeCartTotals();
+    }
+    
   }
 }
